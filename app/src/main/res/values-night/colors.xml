@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="brand_bg">#1A1E12</color>
+    <color name="brand_light">#5C6240</color>
+    <color name="brand">#999F54</color>
+    <color name="brand_dark">#48521C</color>
+
+    <color name="primary">#B5BA82</color>
+    <color name="primary_dark">#48521C</color>
+    <color name="primary_light">#DBDAAF</color>
+    <color name="primary_container">#2E3420</color>
+    <color name="on_primary">#1A1E12</color>
+
+    <color name="secondary">#DBDAAF</color>
+    <color name="secondary_container">#353B24</color>
+
+    <color name="background">#1A1E12</color>
+    <color name="surface">#242A18</color>
+    <color name="surface_variant">#2E3420</color>
+    <color name="outline">#48521C</color>
+
+    <color name="text_primary">#FCFFF5</color>
+    <color name="text_secondary">#DBDAAF</color>
+    <color name="text_hint">#999F54</color>
+
+    <color name="macro_calories">#DBDAAF</color>
+    <color name="macro_protein">#B5BA82</color>
+    <color name="macro_fat">#999F54</color>
+    <color name="macro_carbs">#7A8048</color>
+
+    <color name="progress_track">#2E3420</color>
+    <color name="error">#C8A882</color>
+</resources>

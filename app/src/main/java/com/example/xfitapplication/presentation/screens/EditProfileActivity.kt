@@ -6,8 +6,10 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.xfitapplication.R
 import com.example.xfitapplication.presentation.ViewModelFactory
+import com.example.xfitapplication.presentation.util.parseStrictInt
 import com.example.xfitapplication.presentation.viewmodel.EditProfileViewModel
 import com.google.android.material.textfield.TextInputEditText
+import kotlin.math.roundToInt
 
 class EditProfileActivity : AppCompatActivity() {
 
@@ -15,8 +17,7 @@ class EditProfileActivity : AppCompatActivity() {
         ViewModelFactory { EditProfileViewModel(application) }
     }
 
-    private var currentGender = "female"
-    private var currentActivity = 2
+    private var isFormLoaded = false
 
     private lateinit var etHeight: TextInputEditText
     private lateinit var etWeight: TextInputEditText
@@ -44,21 +45,22 @@ class EditProfileActivity : AppCompatActivity() {
             .setOnClickListener { finish() }
 
         viewModel.user.observe(this) { user ->
-            if (user == null) return@observe
-            currentGender = user.gender
-            currentActivity = user.activityLevel
-            etHeight.setText(user.heightCm.toInt().toString())
-            etWeight.setText(user.weightKg.toInt().toString())
-            etAge.setText(user.ageYears.toString())
-            etTargetWeight.setText((user.targetWeightKg ?: user.weightKg).toInt().toString())
-            etCalories.setText(user.dailyCalories.toInt().toString())
-            etProtein.setText(user.dailyProtein.toInt().toString())
-            etFat.setText(user.dailyFat.toInt().toString())
-            etCarbs.setText(user.dailyCarbs.toInt().toString())
+            if (user == null || isFormLoaded) return@observe
+            isFormLoaded = true
+            fillForm(
+                user.heightCm.roundToInt(),
+                user.weightKg.roundToInt(),
+                user.ageYears,
+                (user.targetWeightKg ?: user.weightKg).roundToInt(),
+                user.dailyCalories.roundToInt(),
+                user.dailyProtein.roundToInt(),
+                user.dailyFat.roundToInt(),
+                user.dailyCarbs.roundToInt()
+            )
         }
 
-        viewModel.saveResult.observe(this) { result ->
-            when (result) {
+        viewModel.saveResult.observe(this) { event ->
+            when (val result = event?.getContentIfNotHandled()) {
                 is EditProfileViewModel.SaveResult.Success -> {
                     Toast.makeText(this, "Изменения сохранены", Toast.LENGTH_SHORT).show()
                     setResult(RESULT_OK)
@@ -67,49 +69,84 @@ class EditProfileActivity : AppCompatActivity() {
                 is EditProfileViewModel.SaveResult.Error -> {
                     Toast.makeText(this, result.message, Toast.LENGTH_LONG).show()
                 }
+                null -> Unit
             }
         }
 
         findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSave)
-            .setOnClickListener { save(recalculateNorm = true) }
+            .setOnClickListener {
+                readForm()?.let { viewModel.save(it) }
+            }
 
         findViewById<com.google.android.material.button.MaterialButton>(R.id.btnReset)
             .setOnClickListener {
                 viewModel.user.value?.let { user ->
-                    etHeight.setText(user.heightCm.toInt().toString())
-                    etWeight.setText(user.weightKg.toInt().toString())
-                    etAge.setText(user.ageYears.toString())
-                    etTargetWeight.setText((user.targetWeightKg ?: user.weightKg).toInt().toString())
-                    etCalories.setText(user.dailyCalories.toInt().toString())
-                    etProtein.setText(user.dailyProtein.toInt().toString())
-                    etFat.setText(user.dailyFat.toInt().toString())
-                    etCarbs.setText(user.dailyCarbs.toInt().toString())
+                    fillForm(
+                        user.heightCm.roundToInt(),
+                        user.weightKg.roundToInt(),
+                        user.ageYears,
+                        (user.targetWeightKg ?: user.weightKg).roundToInt(),
+                        user.dailyCalories.roundToInt(),
+                        user.dailyProtein.roundToInt(),
+                        user.dailyFat.roundToInt(),
+                        user.dailyCarbs.roundToInt()
+                    )
                     Toast.makeText(this, "Изменения сброшены", Toast.LENGTH_SHORT).show()
                 }
             }
     }
 
-    private fun save(recalculateNorm: Boolean) {
-        val height = etHeight.text.toString().toDoubleOrNull()
-        val weight = etWeight.text.toString().toDoubleOrNull()
-        val age = etAge.text.toString().toIntOrNull()
-        val targetWeight = etTargetWeight.text.toString().toDoubleOrNull()
-        val calories = etCalories.text.toString().toDoubleOrNull()
-        val protein = etProtein.text.toString().toDoubleOrNull()
-        val fat = etFat.text.toString().toDoubleOrNull()
-        val carbs = etCarbs.text.toString().toDoubleOrNull()
+    private fun fillForm(
+        height: Int, weight: Int, age: Int, targetWeight: Int,
+        calories: Int, protein: Int, fat: Int, carbs: Int
+    ) {
+        etHeight.setText(height.toString())
+        etWeight.setText(weight.toString())
+        etAge.setText(age.toString())
+        etTargetWeight.setText(targetWeight.toString())
+        etCalories.setText(calories.toString())
+        etProtein.setText(protein.toString())
+        etFat.setText(fat.toString())
+        etCarbs.setText(carbs.toString())
+    }
+
+    private fun readForm(): EditProfileViewModel.ProfileForm? {
+        val height = readIntField(etHeight, "Рост")
+        val weight = readIntField(etWeight, "Вес")
+        val age = readIntField(etAge, "Возраст")
+        val targetWeight = readIntField(etTargetWeight, "Целевой вес")
+        val calories = readIntField(etCalories, "Калории")
+        val protein = readIntField(etProtein, "Белки")
+        val fat = readIntField(etFat, "Жиры")
+        val carbs = readIntField(etCarbs, "Углеводы")
 
         if (height == null || weight == null || age == null || targetWeight == null ||
             calories == null || protein == null || fat == null || carbs == null
         ) {
-            Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show()
-            return
+            return null
         }
 
-        viewModel.save(
-            height, weight, age, targetWeight,
-            calories, protein, fat, carbs,
-            currentGender, currentActivity, recalculateNorm
+        return EditProfileViewModel.ProfileForm(
+            height = height,
+            weight = weight,
+            age = age,
+            targetWeight = targetWeight,
+            calories = calories,
+            protein = protein,
+            fat = fat,
+            carbs = carbs
         )
+    }
+
+    private fun readIntField(field: TextInputEditText, label: String): Int? {
+        val raw = field.text?.toString().orEmpty()
+        val value = raw.parseStrictInt()
+        if (value == null) {
+            field.error = "Только целое число"
+            Toast.makeText(this, "Поле «$label»: введите целое число", Toast.LENGTH_SHORT).show()
+        } else {
+            field.error = null
+        }
+        return value
     }
 }
