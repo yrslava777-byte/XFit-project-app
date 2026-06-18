@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">XFit Application</string>
+    <string name="activity_level">Активность: %d</string>
 </resources>
