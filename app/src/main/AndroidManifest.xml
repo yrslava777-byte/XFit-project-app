@@ -12,10 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.XFitApplication">
         <activity
-            android:name=".presentation.screens.DiaryActivity"
+            android:name=".presentation.screens.EditProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.screens.AddFoodActivity"
+            android:name=".presentation.screens.ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.screens.DiaryActivity"
             android:exported="false" />
         <activity
             android:name=".presentation.screens.AddFoodActivity"
@@ -36,13 +39,7 @@
             android:name=".presentation.screens.SearchActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.screens.SearchActivity"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
-            android:exported="false" />
-        <activity
-            android:name=".presentation.screens.DiaryActivity"
             android:exported="false" />
     </application>
 

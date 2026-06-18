@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface FoodEntryDao {
     @Query("SELECT * FROM food_entries WHERE mealDate = :date ORDER BY id")
-    fun getEntriesByDate(date: String): Flow<List<FoodEntryEntity>>
+    fun getEntriesByDate(date: String): Flow<List<FoodEntryEntity>>  // Flow вместо List
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEntry(entry: FoodEntryEntity)
 
     @Delete

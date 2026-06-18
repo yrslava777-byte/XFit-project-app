@@ -8,7 +8,9 @@ import com.example.xfitapplication.data.local.UserEntity
 import com.example.xfitapplication.data.repository.FoodRepository
 import com.example.xfitapplication.domain.model.User
 import com.example.xfitapplication.domain.usecase.CalculateDailyNormUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class OnboardingViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -47,9 +49,9 @@ class OnboardingViewModel(application: Application) : AndroidViewModel(applicati
                 )
             )
 
-            println("User saved to DB: ${user.heightCm}")
-
-            onSuccess(user)
+            withContext(Dispatchers.Main) {
+                onSuccess(user)
+            }
         }
     }
 }

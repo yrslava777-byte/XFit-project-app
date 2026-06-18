@@ -1,9 +1,6 @@
 package com.example.xfitapplication.data.repository
 
 import com.example.xfitapplication.data.local.*
-import com.example.xfitapplication.domain.model.FoodEntry
-import com.example.xfitapplication.domain.model.Product
-import com.example.xfitapplication.domain.model.User
 import kotlinx.coroutines.flow.Flow
 
 class FoodRepository(
@@ -12,8 +9,8 @@ class FoodRepository(
     private val foodEntryDao: FoodEntryDao
 ) {
     // User
-    fun getUser(userId: Int = 1): Flow<UserEntity> = userDao.getUserById(userId)
-    suspend fun insertUser(user: UserEntity) = userDao.insertUser(user)
+    fun getUser(): Flow<UserEntity?> = userDao.getUser()
+    suspend fun insertUser(user: UserEntity) = userDao.insert(user)
 
     // Products
     fun getAllProducts(): Flow<List<ProductEntity>> = productDao.getAllProducts()
