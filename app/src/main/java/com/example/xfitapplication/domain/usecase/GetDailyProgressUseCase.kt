@@ -2,6 +2,7 @@ package com.example.xfitapplication.domain.usecase
 
 import com.example.xfitapplication.domain.model.FoodEntry
 import com.example.xfitapplication.domain.model.User
+import kotlin.math.roundToInt
 
 class GetDailyProgressUseCase {
 
@@ -17,6 +18,9 @@ class GetDailyProgressUseCase {
         val breakfastCalories: Double,
         val lunchCalories: Double,
         val dinnerCalories: Double,
+        val breakfastTargetCalories: Int,
+        val lunchTargetCalories: Int,
+        val dinnerTargetCalories: Int,
         val remainingCalories: Double
     )
 
@@ -31,6 +35,8 @@ class GetDailyProgressUseCase {
         val consumedFat = entries.sumOf { it.fatTotal }
         val consumedCarb = entries.sumOf { it.carbsTotal }
 
+        val mealTargets = mealTargetsFor(normCal)
+
         return DailyProgress(
             normCalories = normCal,
             normProtein = normProt,
@@ -43,7 +49,22 @@ class GetDailyProgressUseCase {
             breakfastCalories = entries.filter { it.mealType == "breakfast" }.sumOf { it.caloriesTotal },
             lunchCalories = entries.filter { it.mealType == "lunch" }.sumOf { it.caloriesTotal },
             dinnerCalories = entries.filter { it.mealType == "dinner" }.sumOf { it.caloriesTotal },
+            breakfastTargetCalories = mealTargets.first,
+            lunchTargetCalories = mealTargets.second,
+            dinnerTargetCalories = mealTargets.third,
             remainingCalories = normCal - consumedCal
         )
+    }
+
+    private fun mealTargetsFor(dailyCalories: Double): Triple<Int, Int, Int> {
+        val breakfast = (dailyCalories * BREAKFAST_RATIO).roundToInt()
+        val lunch = (dailyCalories * LUNCH_RATIO).roundToInt()
+        val dinner = (dailyCalories - breakfast - lunch).roundToInt().coerceAtLeast(0)
+        return Triple(breakfast, lunch, dinner)
+    }
+
+    companion object {
+        private const val BREAKFAST_RATIO = 500.0 / 1750.0
+        private const val LUNCH_RATIO = 700.0 / 1750.0
     }
 }

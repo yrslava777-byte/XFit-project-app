@@ -75,9 +75,9 @@ class DashboardActivity : AppCompatActivity() {
             tvFatValue.text = "${progress.consumedFat.toInt()} / ${progress.normFat.toInt()} г"
             tvCarbsValue.text = "${progress.consumedCarbs.toInt()} / ${progress.normCarbs.toInt()} г"
 
-            tvBreakfastCal.text = "${progress.breakfastCalories.toInt()} / 500 ккал"
-            tvLunchCal.text = "${progress.lunchCalories.toInt()} / 700 ккал"
-            tvDinnerCal.text = "${progress.dinnerCalories.toInt()} / 550 ккал"
+            tvBreakfastCal.text = "${progress.breakfastCalories.toInt()} / ${progress.breakfastTargetCalories} ккал"
+            tvLunchCal.text = "${progress.lunchCalories.toInt()} / ${progress.lunchTargetCalories} ккал"
+            tvDinnerCal.text = "${progress.dinnerCalories.toInt()} / ${progress.dinnerTargetCalories} ккал"
         }
     }
 
