@@ -1,4 +1,34 @@
 <resources>
-    <string name="app_name">XFit Application</string>
+    <string name="app_name">XFit</string>
     <string name="activity_level">Активность: %d</string>
+
+    <string name="onboarding_subtitle">Рассчитаем вашу суточную норму КБЖУ</string>
+    <string name="hint_height">Рост (см)</string>
+    <string name="hint_weight">Вес (кг)</string>
+    <string name="hint_age">Возраст</string>
+    <string name="label_gender">Пол</string>
+    <string name="gender_male">Мужской</string>
+    <string name="gender_female">Женский</string>
+    <string name="btn_calculate">Рассчитать норму</string>
+
+    <string name="dashboard_title">Сегодня</string>
+    <string name="kcal">ккал</string>
+    <string name="macros_title">Белки · Жиры · Углеводы</string>
+    <string name="macro_protein">Белки</string>
+    <string name="macro_fat">Жиры</string>
+    <string name="macro_carbs">Углеводы</string>
+    <string name="meals_title">Приёмы пищи</string>
+    <string name="meal_breakfast">Завтрак</string>
+    <string name="meal_lunch">Обед</string>
+    <string name="meal_dinner">Ужин</string>
+    <string name="add_food">Добавить продукт</string>
+    <string name="nav_diary">Дневник</string>
+    <string name="nav_profile">Профиль</string>
+
+    <string name="search_hint">Поиск продукта…</string>
+    <string name="search_title">Поиск продукта</string>
+    <string name="profile_title">Профиль</string>
+    <string name="back">Назад</string>
+    <string name="diary_title">Дневник питания</string>
+    <string name="edit_profile_title">Изменить параметры</string>
 </resources>

@@ -1,104 +1,115 @@
 package com.example.xfitapplication.presentation.screens
 
 import android.os.Bundle
-import android.widget.Button
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.xfitapplication.R
+import com.example.xfitapplication.presentation.ViewModelFactory
+import com.example.xfitapplication.presentation.viewmodel.EditProfileViewModel
 import com.google.android.material.textfield.TextInputEditText
 
 class EditProfileActivity : AppCompatActivity() {
 
-    private var originalHeight = 0.0
-    private var originalWeight = 0.0
-    private var originalAge = 0
-    private var originalTargetWeight = 0.0
-    private var originalCalories = 0.0
-    private var originalProtein = 0.0
-    private var originalFat = 0.0
-    private var originalCarbs = 0.0
+    private val viewModel: EditProfileViewModel by viewModels {
+        ViewModelFactory { EditProfileViewModel(application) }
+    }
+
+    private var currentGender = "female"
+    private var currentActivity = 2
+
+    private lateinit var etHeight: TextInputEditText
+    private lateinit var etWeight: TextInputEditText
+    private lateinit var etAge: TextInputEditText
+    private lateinit var etTargetWeight: TextInputEditText
+    private lateinit var etCalories: TextInputEditText
+    private lateinit var etProtein: TextInputEditText
+    private lateinit var etFat: TextInputEditText
+    private lateinit var etCarbs: TextInputEditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
 
-        val btnBack = findViewById<Button>(R.id.btnBack)
-        val btnSave = findViewById<Button>(R.id.btnSave)
-        val btnReset = findViewById<Button>(R.id.btnReset)
+        etHeight = findViewById(R.id.etHeight)
+        etWeight = findViewById(R.id.etWeight)
+        etAge = findViewById(R.id.etAge)
+        etTargetWeight = findViewById(R.id.etTargetWeight)
+        etCalories = findViewById(R.id.etCalories)
+        etProtein = findViewById(R.id.etProtein)
+        etFat = findViewById(R.id.etFat)
+        etCarbs = findViewById(R.id.etCarbs)
 
-        val etHeight = findViewById<TextInputEditText>(R.id.etHeight)
-        val etWeight = findViewById<TextInputEditText>(R.id.etWeight)
-        val etAge = findViewById<TextInputEditText>(R.id.etAge)
-        val etTargetWeight = findViewById<TextInputEditText>(R.id.etTargetWeight)
-        val etCalories = findViewById<TextInputEditText>(R.id.etCalories)
-        val etProtein = findViewById<TextInputEditText>(R.id.etProtein)
-        val etFat = findViewById<TextInputEditText>(R.id.etFat)
-        val etCarbs = findViewById<TextInputEditText>(R.id.etCarbs)
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnBack)
+            .setOnClickListener { finish() }
 
-        originalHeight = intent.getDoubleExtra("HEIGHT", 170.0)
-        originalWeight = intent.getDoubleExtra("WEIGHT", 70.0)
-        originalAge = intent.getIntExtra("AGE", 25)
-        originalTargetWeight = intent.getDoubleExtra("TARGET_WEIGHT", 65.0)
-        originalCalories = intent.getDoubleExtra("CALORIES", 2000.0)
-        originalProtein = intent.getDoubleExtra("PROTEIN", 120.0)
-        originalFat = intent.getDoubleExtra("FAT", 60.0)
-        originalCarbs = intent.getDoubleExtra("CARBS", 250.0)
-
-        etHeight.setText(originalHeight.toInt().toString())
-        etWeight.setText(originalWeight.toInt().toString())
-        etAge.setText(originalAge.toString())
-        etTargetWeight.setText(originalTargetWeight.toInt().toString())
-        etCalories.setText(originalCalories.toInt().toString())
-        etProtein.setText(originalProtein.toInt().toString())
-        etFat.setText(originalFat.toInt().toString())
-        etCarbs.setText(originalCarbs.toInt().toString())
-
-        btnBack.setOnClickListener { finish() }
-
-        btnSave.setOnClickListener {
-            val newHeight = etHeight.text.toString().toDoubleOrNull()
-            val newWeight = etWeight.text.toString().toDoubleOrNull()
-            val newAge = etAge.text.toString().toIntOrNull()
-            val newTargetWeight = etTargetWeight.text.toString().toDoubleOrNull()
-            val newCalories = etCalories.text.toString().toDoubleOrNull()
-            val newProtein = etProtein.text.toString().toDoubleOrNull()
-            val newFat = etFat.text.toString().toDoubleOrNull()
-            val newCarbs = etCarbs.text.toString().toDoubleOrNull()
-
-            if (newHeight == null || newWeight == null || newAge == null ||
-                newTargetWeight == null || newCalories == null ||
-                newProtein == null || newFat == null || newCarbs == null) {
-                Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val resultIntent = android.content.Intent().apply {
-                putExtra("HEIGHT", newHeight)
-                putExtra("WEIGHT", newWeight)
-                putExtra("AGE", newAge)
-                putExtra("TARGET_WEIGHT", newTargetWeight)
-                putExtra("CALORIES", newCalories)
-                putExtra("PROTEIN", newProtein)
-                putExtra("FAT", newFat)
-                putExtra("CARBS", newCarbs)
-            }
-
-            setResult(RESULT_OK, resultIntent)
-            Toast.makeText(this, "Изменения сохранены", Toast.LENGTH_SHORT).show()
-            finish()
+        viewModel.user.observe(this) { user ->
+            if (user == null) return@observe
+            currentGender = user.gender
+            currentActivity = user.activityLevel
+            etHeight.setText(user.heightCm.toInt().toString())
+            etWeight.setText(user.weightKg.toInt().toString())
+            etAge.setText(user.ageYears.toString())
+            etTargetWeight.setText((user.targetWeightKg ?: user.weightKg).toInt().toString())
+            etCalories.setText(user.dailyCalories.toInt().toString())
+            etProtein.setText(user.dailyProtein.toInt().toString())
+            etFat.setText(user.dailyFat.toInt().toString())
+            etCarbs.setText(user.dailyCarbs.toInt().toString())
         }
 
-        btnReset.setOnClickListener {
-            etHeight.setText(originalHeight.toInt().toString())
-            etWeight.setText(originalWeight.toInt().toString())
-            etAge.setText(originalAge.toString())
-            etTargetWeight.setText(originalTargetWeight.toInt().toString())
-            etCalories.setText(originalCalories.toInt().toString())
-            etProtein.setText(originalProtein.toInt().toString())
-            etFat.setText(originalFat.toInt().toString())
-            etCarbs.setText(originalCarbs.toInt().toString())
-
-            Toast.makeText(this, "Изменения сброшены", Toast.LENGTH_SHORT).show()
+        viewModel.saveResult.observe(this) { result ->
+            when (result) {
+                is EditProfileViewModel.SaveResult.Success -> {
+                    Toast.makeText(this, "Изменения сохранены", Toast.LENGTH_SHORT).show()
+                    setResult(RESULT_OK)
+                    finish()
+                }
+                is EditProfileViewModel.SaveResult.Error -> {
+                    Toast.makeText(this, result.message, Toast.LENGTH_LONG).show()
+                }
+            }
         }
+
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSave)
+            .setOnClickListener { save(recalculateNorm = true) }
+
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnReset)
+            .setOnClickListener {
+                viewModel.user.value?.let { user ->
+                    etHeight.setText(user.heightCm.toInt().toString())
+                    etWeight.setText(user.weightKg.toInt().toString())
+                    etAge.setText(user.ageYears.toString())
+                    etTargetWeight.setText((user.targetWeightKg ?: user.weightKg).toInt().toString())
+                    etCalories.setText(user.dailyCalories.toInt().toString())
+                    etProtein.setText(user.dailyProtein.toInt().toString())
+                    etFat.setText(user.dailyFat.toInt().toString())
+                    etCarbs.setText(user.dailyCarbs.toInt().toString())
+                    Toast.makeText(this, "Изменения сброшены", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
+    private fun save(recalculateNorm: Boolean) {
+        val height = etHeight.text.toString().toDoubleOrNull()
+        val weight = etWeight.text.toString().toDoubleOrNull()
+        val age = etAge.text.toString().toIntOrNull()
+        val targetWeight = etTargetWeight.text.toString().toDoubleOrNull()
+        val calories = etCalories.text.toString().toDoubleOrNull()
+        val protein = etProtein.text.toString().toDoubleOrNull()
+        val fat = etFat.text.toString().toDoubleOrNull()
+        val carbs = etCarbs.text.toString().toDoubleOrNull()
+
+        if (height == null || weight == null || age == null || targetWeight == null ||
+            calories == null || protein == null || fat == null || carbs == null
+        ) {
+            Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        viewModel.save(
+            height, weight, age, targetWeight,
+            calories, protein, fat, carbs,
+            currentGender, currentActivity, recalculateNorm
+        )
     }
 }

@@ -3,77 +3,61 @@ package com.example.xfitapplication.presentation.screens
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
-import android.widget.EditText
 import android.widget.ListView
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doAfterTextChanged
 import com.example.xfitapplication.R
+import com.example.xfitapplication.domain.model.Product
+import com.example.xfitapplication.presentation.ViewModelFactory
+import com.example.xfitapplication.presentation.viewmodel.SearchViewModel
 
 class SearchActivity : AppCompatActivity() {
-    data class ProductInfo(
-        val name: String,
-        val kcal: Double,
-        val prot: Double,
-        val fat: Double,
-        val carb: Double
-    )
 
-    private lateinit var etSearch: EditText
+    private val viewModel: SearchViewModel by viewModels {
+        ViewModelFactory { SearchViewModel(application) }
+    }
+
     private lateinit var lvResults: ListView
-    private lateinit var addFoodLauncher: ActivityResultLauncher<Intent>
-
-    private val products = listOf(
-        ProductInfo("Куриная грудка", 165.0, 31.0, 3.6, 0.0),
-        ProductInfo("Рис отварной", 130.0, 2.7, 0.3, 28.0),
-        ProductInfo("Гречка", 110.0, 4.2, 1.1, 20.0),
-        ProductInfo("Яблоко", 52.0, 0.3, 0.2, 14.0),
-        ProductInfo("Молоко 2.5%", 54.0, 2.8, 2.5, 4.7),
-        ProductInfo("Хлеб черный", 250.0, 8.5, 1.2, 48.0),
-        ProductInfo("Творог 5%", 120.0, 17.0, 5.0, 1.8),
-        ProductInfo("Яйцо куриное", 155.0, 13.0, 11.0, 1.1)
-    )
+    private var products: List<Product> = emptyList()
+    private lateinit var adapter: ArrayAdapter<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        etSearch = findViewById(R.id.etSearchQuery)
+        val etSearch = findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etSearchQuery)
         lvResults = findViewById(R.id.lvSearchResults)
 
-        val adapter = ArrayAdapter(this, R.layout.item_product_list, products.map { it.name })
+        adapter = ArrayAdapter(this, R.layout.item_product_list, R.id.tvProductItem, mutableListOf())
         lvResults.adapter = adapter
 
-        addFoodLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                setResult(RESULT_OK, result.data)
-                finish()
-            }
+        viewModel.products.observe(this) { list ->
+            products = list
+            adapter.clear()
+            adapter.addAll(list.map { it.name })
+            adapter.notifyDataSetChanged()
         }
 
-        etSearch.addTextChangedListener(object : android.text.TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                adapter.filter.filter(s.toString())
-            }
-            override fun afterTextChanged(s: android.text.Editable?) {}
-        })
+        etSearch.doAfterTextChanged { text ->
+            viewModel.setQuery(text?.toString().orEmpty())
+        }
 
         lvResults.setOnItemClickListener { _, _, position, _ ->
-            val selected = adapter.getItem(position) ?: return@setOnItemClickListener
-            val product = products.find { it.name == selected } ?: return@setOnItemClickListener
-
+            val product = products.getOrNull(position) ?: return@setOnItemClickListener
             val mealType = intent.getStringExtra("MEAL_TYPE") ?: "breakfast"
 
-            val intent = Intent(this, AddFoodActivity::class.java).apply {
+            val addIntent = Intent(this, AddFoodActivity::class.java).apply {
+                putExtra("PRODUCT_ID", product.id)
                 putExtra("PRODUCT_NAME", product.name)
-                putExtra("KCAL_PER_100", product.kcal)
-                putExtra("PROT_PER_100", product.prot)
-                putExtra("FAT_PER_100", product.fat)
-                putExtra("CARB_PER_100", product.carb)
+                putExtra("KCAL_PER_100", product.caloriesPer100g)
+                putExtra("PROT_PER_100", product.proteinPer100g)
+                putExtra("FAT_PER_100", product.fatPer100g)
+                putExtra("CARB_PER_100", product.carbsPer100g)
                 putExtra("MEAL_TYPE", mealType)
             }
-            addFoodLauncher.launch(intent)
+            startActivity(addIntent)
+            finish()
         }
     }
 }

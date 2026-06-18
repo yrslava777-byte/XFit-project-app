@@ -14,6 +14,9 @@ interface FoodEntryDao {
     @Delete
     suspend fun deleteEntry(entry: FoodEntryEntity)
 
+    @Query("DELETE FROM food_entries WHERE mealDate = :date")
+    suspend fun deleteAllByDate(date: String)
+
     @Query("DELETE FROM food_entries")
     suspend fun deleteAllEntries()
 }

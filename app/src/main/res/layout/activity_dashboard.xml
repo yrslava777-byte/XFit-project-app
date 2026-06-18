@@ -1,307 +1,419 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#FAFAFA">
+    android:background="@color/background"
+    android:orientation="vertical">
 
-    <!-- Заголовок -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Сегодня"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:padding="16dp" />
+        android:background="@color/primary_dark"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/screen_padding"
+        android:paddingTop="28dp"
+        android:paddingBottom="20dp">
 
-    <!-- Круговой прогресс -->
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginBottom="16dp">
-
-        <ProgressBar
-            android:id="@+id/progressCircle"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:indeterminate="false"
-            android:max="2000"
-            android:progress="850"
-            android:progressDrawable="@drawable/circle_progress" />
-
-        <LinearLayout
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:text="@string/app_name"
+            android:textColor="@color/primary_light"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/dashboard_title"
+            android:textColor="@color/on_primary"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:padding="@dimen/screen_padding">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.XFit.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/item_spacing">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="16dp">
+
+                    <ProgressBar
+                        android:id="@+id/progressCircle"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:layout_centerInParent="true"
+                        android:indeterminate="false"
+                        android:max="2000"
+                        android:progress="0"
+                        android:progressDrawable="@drawable/circle_progress" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txtCalories"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0 / 2000"
+                            android:textColor="@color/text_primary"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/kcal"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </RelativeLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.XFit.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/section_spacing">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:text="@string/macros_title"
+                        android:textColor="@color/text_primary"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="10dp">
+
+                        <TextView
+                            android:layout_width="72dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/macro_protein"
+                            android:textColor="@color/macro_protein"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <ProgressBar
+                            android:id="@+id/barProtein"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="0dp"
+                            android:layout_height="10dp"
+                            android:layout_weight="1"
+                            android:max="120"
+                            android:progress="0"
+                            android:progressDrawable="@drawable/progress_blue" />
+
+                        <TextView
+                            android:id="@+id/tvProteinValue"
+                            android:layout_width="72dp"
+                            android:layout_height="wrap_content"
+                            android:gravity="end"
+                            android:text="0 / 120 г"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="10dp">
+
+                        <TextView
+                            android:layout_width="72dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/macro_fat"
+                            android:textColor="@color/macro_fat"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <ProgressBar
+                            android:id="@+id/barFat"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="0dp"
+                            android:layout_height="10dp"
+                            android:layout_weight="1"
+                            android:max="70"
+                            android:progress="0"
+                            android:progressDrawable="@drawable/progress_yellow" />
+
+                        <TextView
+                            android:id="@+id/tvFatValue"
+                            android:layout_width="72dp"
+                            android:layout_height="wrap_content"
+                            android:gravity="end"
+                            android:text="0 / 60 г"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="72dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/macro_carbs"
+                            android:textColor="@color/macro_carbs"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <ProgressBar
+                            android:id="@+id/barCarbs"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="0dp"
+                            android:layout_height="10dp"
+                            android:layout_weight="1"
+                            android:max="250"
+                            android:progress="0"
+                            android:progressDrawable="@drawable/progress_green" />
+
+                        <TextView
+                            android:id="@+id/tvCarbsValue"
+                            android:layout_width="72dp"
+                            android:layout_height="wrap_content"
+                            android:gravity="end"
+                            android:text="0 / 250 г"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <TextView
-                android:id="@+id/txtCalories"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="850 / 2000"
-                android:textSize="18sp"
+                android:layout_marginBottom="12dp"
+                android:text="@string/meals_title"
+                android:textColor="@color/text_primary"
                 android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="wrap_content"
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.XFit.Card"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="ккал"
-                android:textSize="14sp"
-                android:textColor="#757575" />
-        </LinearLayout>
-    </RelativeLayout>
+                android:layout_marginBottom="8dp">
 
-    <!-- Полоски БЖУ -->
-    <LinearLayout
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_meal_item"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="4dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/meal_breakfast"
+                            android:textColor="@color/text_primary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvBreakfastCal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="0 / 500 ккал"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnBreakfast"
+                        style="@style/Widget.Material3.Button.IconButton.Filled"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="8dp"
+                        android:contentDescription="@string/add_food"
+                        app:backgroundTint="@color/primary_container"
+                        app:icon="@drawable/ic_add"
+                        app:iconTint="@color/primary" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.XFit.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_meal_item"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="4dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/meal_lunch"
+                            android:textColor="@color/text_primary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvLunchCal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="0 / 700 ккал"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnLunch"
+                        style="@style/Widget.Material3.Button.IconButton.Filled"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="8dp"
+                        android:contentDescription="@string/add_food"
+                        app:backgroundTint="@color/primary_container"
+                        app:icon="@drawable/ic_add"
+                        app:iconTint="@color/primary" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.XFit.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_meal_item"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="4dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/meal_dinner"
+                            android:textColor="@color/text_primary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvDinnerCal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="0 / 550 ккал"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnDinner"
+                        style="@style/Widget.Material3.Button.IconButton.Filled"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="8dp"
+                        android:contentDescription="@string/add_food"
+                        app:backgroundTint="@color/primary_container"
+                        app:icon="@drawable/ic_add"
+                        app:iconTint="@color/primary" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        app:cardCornerRadius="0dp"
+        app:cardElevation="8dp">
 
-        <!-- Белки -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="8dp">
-
-            <ProgressBar
-                android:id="@+id/barProtein"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="0dp"
-                android:layout_height="8dp"
-                android:layout_weight="1"
-                android:max="120"
-                android:progress="0"
-                android:progressDrawable="@drawable/progress_blue" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="белки"
-                android:textSize="12sp"
-                android:textColor="#757575"
-                android:layout_marginStart="8dp" />
-        </LinearLayout>
-
-        <!-- Жиры -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="8dp">
-
-            <ProgressBar
-                android:id="@+id/barFat"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="0dp"
-                android:layout_height="8dp"
-                android:layout_weight="1"
-                android:max="70"
-                android:progress="0"
-                android:progressDrawable="@drawable/progress_yellow" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="жиры"
-                android:textSize="12sp"
-                android:textColor="#757575"
-                android:layout_marginStart="8dp" />
-        </LinearLayout>
-
-        <!-- Углеводы -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
-
-            <ProgressBar
-                android:id="@+id/barCarbs"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="0dp"
-                android:layout_height="8dp"
-                android:layout_weight="1"
-                android:max="250"
-                android:progress="0"
-                android:progressDrawable="@drawable/progress_green" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="углеводы"
-                android:textSize="12sp"
-                android:textColor="#757575"
-                android:layout_marginStart="8dp" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- Список приемов пищи (Завтрак, Обед, Ужин) -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:background="#FFFFFF"
-        android:layout_marginBottom="16dp">
-
-        <!-- Завтрак -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:padding="12dp"
-            android:background="#F5F5F5"
-            android:layout_marginBottom="8dp">
+            android:padding="4dp">
 
-            <LinearLayout
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDiary"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical">
+                android:text="@string/nav_diary"
+                app:icon="@drawable/ic_diary"
+                app:iconGravity="textTop"
+                app:iconTint="@color/primary" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Завтрак"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvBreakfastCal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0 / 500 ккал"
-                    android:textSize="12sp"
-                    android:textColor="#757575" />
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/btnBreakfast"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:text="+"
-                android:textSize="18sp"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
-                android:padding="0dp" />
-        </LinearLayout>
-
-        <!-- Обед -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:padding="12dp"
-            android:background="#F5F5F5"
-            android:layout_marginBottom="8dp">
-
-            <LinearLayout
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnProfile"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Обед"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvLunchCal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0 / 700 ккал"
-                    android:textSize="12sp"
-                    android:textColor="#757575" />
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/btnLunch"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:text="+"
-                android:textSize="18sp"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
-                android:padding="0dp" />
+                android:text="@string/nav_profile"
+                app:icon="@drawable/ic_profile"
+                app:iconGravity="textTop"
+                app:iconTint="@color/primary" />
         </LinearLayout>
-
-        <!-- Ужин -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:padding="12dp"
-            android:background="#F5F5F5">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Ужин"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvDinnerCal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0 / 550 ккал"
-                    android:textSize="12sp"
-                    android:textColor="#757575" />
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/btnDinner"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:text="+"
-                android:textSize="18sp"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
-                android:padding="0dp" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- Нижнее меню (Дневник + Профиль) -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:padding="8dp"
-        android:background="#FFFFFF"
-        android:elevation="8dp">
-
-        <Button
-            android:id="@+id/btnDiary"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Дневник" />
-
-        <Button
-            android:id="@+id/btnProfile"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Профиль" />
-    </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>

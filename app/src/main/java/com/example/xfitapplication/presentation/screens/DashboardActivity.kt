@@ -2,162 +2,88 @@ package com.example.xfitapplication.presentation.screens
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.xfitapplication.R
-import java.util.ArrayList
+import com.example.xfitapplication.presentation.ViewModelFactory
+import com.example.xfitapplication.presentation.viewmodel.DashboardViewModel
 
 class DashboardActivity : AppCompatActivity() {
 
-    private lateinit var searchLauncher: ActivityResultLauncher<Intent>
-    private lateinit var profileLauncher: ActivityResultLauncher<Intent>
-    private var consumedCal = 0.0
-    private var consumedProt = 0.0
-    private var consumedFat = 0.0
-    private var consumedCarb = 0.0
+    private val viewModel: DashboardViewModel by viewModels {
+        ViewModelFactory { DashboardViewModel(application) }
+    }
 
-    private val diaryEntries = mutableListOf<DiaryEntry>()
-
-    private var normCal = 2000.0
-    private var normProt = 120.0
-    private var normFat = 60.0
-    private var normCarb = 250.0
-
-    private var breakfastCal = 0.0
-    private var lunchCal = 0.0
-    private var dinnerCal = 0.0
+    private lateinit var txtCal: TextView
+    private lateinit var circleProg: ProgressBar
+    private lateinit var barProt: ProgressBar
+    private lateinit var barFat: ProgressBar
+    private lateinit var barCarb: ProgressBar
+    private lateinit var tvProteinValue: TextView
+    private lateinit var tvFatValue: TextView
+    private lateinit var tvCarbsValue: TextView
+    private lateinit var tvBreakfastCal: TextView
+    private lateinit var tvLunchCal: TextView
+    private lateinit var tvDinnerCal: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
 
-        normCal = intent.getDoubleExtra("CALORIES", 2000.0)
-        normProt = intent.getDoubleExtra("PROTEIN", 120.0)
-        normFat = intent.getDoubleExtra("FAT", 60.0)
-        normCarb = intent.getDoubleExtra("CARBS", 250.0)
+        txtCal = findViewById(R.id.txtCalories)
+        circleProg = findViewById(R.id.progressCircle)
+        barProt = findViewById(R.id.barProtein)
+        barFat = findViewById(R.id.barFat)
+        barCarb = findViewById(R.id.barCarbs)
+        tvProteinValue = findViewById(R.id.tvProteinValue)
+        tvFatValue = findViewById(R.id.tvFatValue)
+        tvCarbsValue = findViewById(R.id.tvCarbsValue)
+        tvBreakfastCal = findViewById(R.id.tvBreakfastCal)
+        tvLunchCal = findViewById(R.id.tvLunchCal)
+        tvDinnerCal = findViewById(R.id.tvDinnerCal)
 
-        val txtCal = findViewById<TextView>(R.id.txtCalories)
-        val circleProg = findViewById<ProgressBar>(R.id.progressCircle)
-        val barProt = findViewById<ProgressBar>(R.id.barProtein)
-        val barFat = findViewById<ProgressBar>(R.id.barFat)
-        val barCarb = findViewById<ProgressBar>(R.id.barCarbs)
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnBreakfast)
+            .setOnClickListener { startSearch("breakfast") }
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnLunch)
+            .setOnClickListener { startSearch("lunch") }
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnDinner)
+            .setOnClickListener { startSearch("dinner") }
 
-        val tvBreakfastCal = findViewById<TextView>(R.id.tvBreakfastCal)
-        val tvLunchCal = findViewById<TextView>(R.id.tvLunchCal)
-        val tvDinnerCal = findViewById<TextView>(R.id.tvDinnerCal)
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnDiary)
+            .setOnClickListener { startActivity(Intent(this, DiaryActivity::class.java)) }
 
-        val btnBreakfast = findViewById<Button>(R.id.btnBreakfast)
-        val btnLunch = findViewById<Button>(R.id.btnLunch)
-        val btnDinner = findViewById<Button>(R.id.btnDinner)
-        val btnDiary = findViewById<Button>(R.id.btnDiary)
-        val btnProfile = findViewById<Button>(R.id.btnProfile)
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnProfile)
+            .setOnClickListener { startActivity(Intent(this, ProfileActivity::class.java)) }
 
-        circleProg.max = normCal.toInt()
-        barProt.max = normProt.toInt()
-        barFat.max = normFat.toInt()
-        barCarb.max = normCarb.toInt()
+        viewModel.uiState.observe(this) { state ->
+            val progress = state.progress ?: return@observe
 
-        searchLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val data = result.data
-                val calories = data?.getDoubleExtra("TOTAL_KCAL", 0.0) ?: 0.0
-                val prot = data?.getDoubleExtra("TOTAL_PROT", 0.0) ?: 0.0
-                val fat = data?.getDoubleExtra("TOTAL_FAT", 0.0) ?: 0.0
-                val carb = data?.getDoubleExtra("TOTAL_CARB", 0.0) ?: 0.0
-                val mealType = data?.getStringExtra("MEAL_TYPE") ?: "breakfast"
-                val productName = data?.getStringExtra("PRODUCT_NAME") ?: "Продукт"
-                val weight = data?.getDoubleExtra("WEIGHT", 0.0) ?: 0.0
+            circleProg.max = progress.normCalories.toInt().coerceAtLeast(1)
+            barProt.max = progress.normProtein.toInt().coerceAtLeast(1)
+            barFat.max = progress.normFat.toInt().coerceAtLeast(1)
+            barCarb.max = progress.normCarbs.toInt().coerceAtLeast(1)
 
-                val entry = DiaryEntry(productName, weight, calories, prot, fat, carb)
-                diaryEntries.add(entry)
+            txtCal.text = "${progress.consumedCalories.toInt()} / ${progress.normCalories.toInt()}"
+            circleProg.progress = progress.consumedCalories.toInt()
+            barProt.progress = progress.consumedProtein.toInt()
+            barFat.progress = progress.consumedFat.toInt()
+            barCarb.progress = progress.consumedCarbs.toInt()
 
-                when (mealType) {
-                    "breakfast" -> {
-                        breakfastCal += calories
-                        tvBreakfastCal.text = "${breakfastCal.toInt()} / 500 ккал"
-                    }
-                    "lunch" -> {
-                        lunchCal += calories
-                        tvLunchCal.text = "${lunchCal.toInt()} / 700 ккал"
-                    }
-                    "dinner" -> {
-                        dinnerCal += calories
-                        tvDinnerCal.text = "${dinnerCal.toInt()} / 550 ккал"
-                    }
-                }
+            tvProteinValue.text = "${progress.consumedProtein.toInt()} / ${progress.normProtein.toInt()} г"
+            tvFatValue.text = "${progress.consumedFat.toInt()} / ${progress.normFat.toInt()} г"
+            tvCarbsValue.text = "${progress.consumedCarbs.toInt()} / ${progress.normCarbs.toInt()} г"
 
-                consumedCal += calories
-                consumedProt += prot
-                consumedFat += fat
-                consumedCarb += carb
-
-                updateUI(txtCal, circleProg, barProt, barFat, barCarb)
-            }
+            tvBreakfastCal.text = "${progress.breakfastCalories.toInt()} / 500 ккал"
+            tvLunchCal.text = "${progress.lunchCalories.toInt()} / 700 ккал"
+            tvDinnerCal.text = "${progress.dinnerCalories.toInt()} / 550 ккал"
         }
-
-        profileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val data = result.data
-                normCal = data?.getDoubleExtra("CALORIES", normCal) ?: normCal
-                normProt = data?.getDoubleExtra("PROTEIN", normProt) ?: normProt
-                normFat = data?.getDoubleExtra("FAT", normFat) ?: normFat
-                normCarb = data?.getDoubleExtra("CARBS", normCarb) ?: normCarb
-
-                val txtCal = findViewById<TextView>(R.id.txtCalories)
-                val circleProg = findViewById<ProgressBar>(R.id.progressCircle)
-                val barProt = findViewById<ProgressBar>(R.id.barProtein)
-                val barFat = findViewById<ProgressBar>(R.id.barFat)
-                val barCarb = findViewById<ProgressBar>(R.id.barCarbs)
-                updateUI(txtCal, circleProg, barProt, barFat, barCarb)
-
-                Toast.makeText(this, "Данные обновлены", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        btnBreakfast.setOnClickListener { startSearch("breakfast") }
-        btnLunch.setOnClickListener { startSearch("lunch") }
-        btnDinner.setOnClickListener { startSearch("dinner") }
-
-        btnDiary.setOnClickListener {
-            val intent = Intent(this, DiaryActivity::class.java)
-            intent.putExtra("DIARY_ENTRIES", ArrayList(diaryEntries))
-            startActivity(intent)
-        }
-
-        btnProfile.setOnClickListener {
-            val intent = Intent(this, ProfileActivity::class.java).apply {
-                putExtra("HEIGHT", 170.0) // TODO: взять из сохраненных
-                putExtra("WEIGHT", 70.0)
-                putExtra("AGE", 25)
-                putExtra("TARGET_WEIGHT", 65.0)
-                putExtra("CALORIES", normCal)
-                putExtra("PROTEIN", normProt)
-                putExtra("FAT", normFat)
-                putExtra("CARBS", normCarb)
-            }
-            profileLauncher.launch(intent)
-        }
-
-        updateUI(txtCal, circleProg, barProt, barFat, barCarb)
     }
 
     private fun startSearch(type: String) {
         val intent = Intent(this, SearchActivity::class.java)
         intent.putExtra("MEAL_TYPE", type)
-        searchLauncher.launch(intent)
-    }
-
-    private fun updateUI(txtCal: TextView, circle: ProgressBar, p: ProgressBar, f: ProgressBar, c: ProgressBar) {
-        txtCal.text = "${consumedCal.toInt()} / ${normCal.toInt()} ккал"
-        circle.progress = consumedCal.toInt()
-        p.progress = consumedProt.toInt()
-        f.progress = consumedFat.toInt()
-        c.progress = consumedCarb.toInt()
+        startActivity(intent)
     }
 }
