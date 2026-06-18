@@ -13,6 +13,7 @@ interface FoodRepository {
     fun getAllProducts(): Flow<List<Product>>
     fun searchProducts(query: String): Flow<List<Product>>
     suspend fun seedProductsIfEmpty()
+    suspend fun addProduct(product: Product): Product
 
     fun getEntriesByDate(date: String): Flow<List<FoodEntry>>
     suspend fun addEntry(entry: FoodEntry)

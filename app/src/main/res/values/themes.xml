@@ -17,4 +17,10 @@
     </style>
 
     <style name="Theme.XFitApplication" parent="Base.Theme.XFitApplication" />
+
+    <style name="Theme.XFitApplication.Launcher" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground_layer</item>
+        <item name="postSplashScreenTheme">@style/Theme.XFitApplication</item>
+    </style>
 </resources>

@@ -21,11 +21,16 @@
             android:name=".presentation.screens.DiaryActivity"
             android:exported="false" />
         <activity
+            android:name=".presentation.screens.AddCustomProductActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".presentation.screens.AddFoodActivity"
             android:exported="false" /> <!-- Главный экран запуска (Onboarding) -->
         <activity
             android:name=".presentation.screens.OnboardingActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.XFitApplication.Launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,9 +42,6 @@
             android:exported="false" />
         <activity
             android:name=".presentation.screens.SearchActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
             android:exported="false" />
     </application>
 

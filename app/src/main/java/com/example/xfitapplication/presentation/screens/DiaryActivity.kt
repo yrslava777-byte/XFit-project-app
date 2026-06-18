@@ -1,7 +1,7 @@
 package com.example.xfitapplication.presentation.screens
 
+import android.content.Intent
 import android.os.Bundle
-import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.xfitapplication.R
 import com.example.xfitapplication.domain.model.FoodEntry
 import com.example.xfitapplication.presentation.ViewModelFactory
+import com.example.xfitapplication.presentation.adapters.DiaryEntryAdapter
 import com.example.xfitapplication.presentation.util.DateUtils
 import com.example.xfitapplication.presentation.viewmodel.DiaryViewModel
 
@@ -20,9 +21,7 @@ class DiaryActivity : AppCompatActivity() {
         ViewModelFactory { DiaryViewModel(application) }
     }
 
-    private val entries = mutableListOf<FoodEntry>()
-    private lateinit var adapter: ArrayAdapter<String>
-    private lateinit var displayItems: MutableList<String>
+    private lateinit var adapter: DiaryEntryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,18 +38,11 @@ class DiaryActivity : AppCompatActivity() {
         val tvTotalCarb = findViewById<TextView>(R.id.tvTotalCarb)
         val lvDiaryItems = findViewById<ListView>(R.id.lvDiaryItems)
 
-        displayItems = mutableListOf()
-        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, displayItems)
+        adapter = DiaryEntryAdapter { entry -> confirmDeleteEntry(entry) }
         lvDiaryItems.adapter = adapter
 
         viewModel.entries.observe(this) { list ->
-            entries.clear()
-            entries.addAll(list)
-            displayItems.clear()
-            displayItems.addAll(list.map { entry ->
-                "${entry.productName} - ${entry.weightGrams.toInt()}г (${entry.caloriesTotal.toInt()} ккал)"
-            })
-            adapter.notifyDataSetChanged()
+            adapter.submitList(list)
         }
 
         viewModel.totals.observe(this) { totals ->
@@ -60,23 +52,9 @@ class DiaryActivity : AppCompatActivity() {
             tvTotalCarb.text = "${totals.consumedCarbs.toInt()} г"
         }
 
-        lvDiaryItems.setOnItemLongClickListener { _, _, position, _ ->
-            val entry = entries.getOrNull(position) ?: return@setOnItemLongClickListener true
-            AlertDialog.Builder(this)
-                .setTitle("Удалить продукт")
-                .setMessage("Удалить \"${entry.productName}\" из дневника?")
-                .setPositiveButton("Удалить") { _, _ ->
-                    viewModel.deleteEntry(entry)
-                    Toast.makeText(this, "Продукт удалён", Toast.LENGTH_SHORT).show()
-                }
-                .setNegativeButton("Отмена", null)
-                .show()
-            true
-        }
-
         findViewById<com.google.android.material.button.MaterialButton>(R.id.btnClearDiary)
             .setOnClickListener {
-                if (entries.isEmpty()) {
+                if (adapter.isEmpty) {
                     Toast.makeText(this, "Дневник уже пуст", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
@@ -90,5 +68,17 @@ class DiaryActivity : AppCompatActivity() {
                     .setNegativeButton("Отмена", null)
                     .show()
             }
+    }
+
+    private fun confirmDeleteEntry(entry: FoodEntry) {
+        AlertDialog.Builder(this)
+            .setTitle("Удалить запись")
+            .setMessage("Удалить \"${entry.productName}\" из дневника?")
+            .setPositiveButton("Удалить") { _, _ ->
+                viewModel.deleteEntry(entry)
+                Toast.makeText(this, "Запись удалена", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Отмена", null)
+            .show()
     }
 }

@@ -28,10 +28,22 @@ class DiaryViewModel(application: Application) : AndroidViewModel(application) {
             .asLiveData()
 
     fun deleteEntry(entry: FoodEntry) {
-        viewModelScope.launch { repository.deleteEntry(entry) }
+        viewModelScope.launch {
+            try {
+                repository.deleteEntry(entry)
+            } catch (_: Exception) {
+                // Ошибка удаления не должна приводить к падению приложения
+            }
+        }
     }
 
     fun clearAll() {
-        viewModelScope.launch { repository.deleteAllEntriesByDate(today) }
+        viewModelScope.launch {
+            try {
+                repository.deleteAllEntriesByDate(today)
+            } catch (_: Exception) {
+                // Ошибка очистки не должна приводить к падению приложения
+            }
+        }
     }
 }

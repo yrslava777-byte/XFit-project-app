@@ -12,16 +12,31 @@
         android:orientation="vertical"
         android:padding="@dimen/screen_padding">
 
-        <TextView
-            android:id="@+id/tvProductName"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:gravity="center"
-            android:text="Название продукта"
-            android:textColor="@color/text_primary"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/bg_icon_circle"
+                android:contentDescription="@null"
+                android:padding="8dp"
+                android:src="@drawable/ic_food" />
+
+            <TextView
+                android:id="@+id/tvProductName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Название продукта"
+                android:textColor="@color/text_primary"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.XFit.Card"
@@ -48,12 +63,12 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:layout_marginEnd="8dp"
-                        android:text="●"
-                        android:textColor="@color/macro_calories" />
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_calories" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -78,12 +93,13 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:layout_marginEnd="8dp"
-                        android:text="●"
-                        android:textColor="@color/macro_protein" />
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_food"
+                        app:tint="@color/macro_protein" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -108,12 +124,13 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:layout_marginEnd="8dp"
-                        android:text="●"
-                        android:textColor="@color/macro_fat" />
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_food"
+                        app:tint="@color/macro_fat" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -137,12 +154,13 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:layout_marginEnd="8dp"
-                        android:text="●"
-                        android:textColor="@color/macro_carbs" />
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_food"
+                        app:tint="@color/macro_carbs" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -166,7 +184,8 @@
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Вес порции (г)">
+            android:hint="Вес порции (г)"
+            app:startIconDrawable="@drawable/ic_weight">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etWeight"
@@ -195,7 +214,11 @@
                 style="@style/Widget.XFit.Button.Primary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Добавить" />
+                android:text="Добавить"
+                app:icon="@drawable/icon_plus"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                app:iconTint="@null" />
         </LinearLayout>
 
     </LinearLayout>

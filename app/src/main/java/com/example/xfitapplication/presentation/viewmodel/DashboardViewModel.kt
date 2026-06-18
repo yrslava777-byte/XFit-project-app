@@ -39,6 +39,12 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     }.asLiveData()
 
     init {
-        viewModelScope.launch { repository.seedProductsIfEmpty() }
+        viewModelScope.launch {
+            try {
+                repository.seedProductsIfEmpty()
+            } catch (_: Exception) {
+                // Не блокируем экран при ошибке инициализации базы
+            }
+        }
     }
 }
