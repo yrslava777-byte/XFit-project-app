@@ -12,9 +12,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.XFitApplication">
         <activity
+            android:name=".presentation.screens.DiaryActivity"
+            android:exported="false" />
+        <activity
             android:name=".presentation.screens.AddFoodActivity"
             android:exported="false" />
-        <!-- Главный экран запуска (Onboarding) -->
+        <activity
+            android:name=".presentation.screens.AddFoodActivity"
+            android:exported="false" /> <!-- Главный экран запуска (Onboarding) -->
         <activity
             android:name=".presentation.screens.OnboardingActivity"
             android:exported="true">
@@ -31,13 +36,13 @@
             android:name=".presentation.screens.SearchActivity"
             android:exported="false" />
         <activity
+            android:name=".presentation.screens.SearchActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.screens.AddFoodActivity"
-            android:exported="false" />
-        <activity
-            android:name=".presentation.screens.SearchActivity"
+            android:name=".presentation.screens.DiaryActivity"
             android:exported="false" />
     </application>
 

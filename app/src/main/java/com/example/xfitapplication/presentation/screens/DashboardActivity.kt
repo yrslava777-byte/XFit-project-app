@@ -11,6 +11,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.xfitapplication.R
+import java.util.ArrayList
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -21,12 +22,13 @@ class DashboardActivity : AppCompatActivity() {
     private var consumedFat = 0.0
     private var consumedCarb = 0.0
 
+    private val diaryEntries = mutableListOf<DiaryEntry>()
+
     private var normCal = 2000.0
     private var normProt = 120.0
     private var normFat = 60.0
     private var normCarb = 250.0
 
-    // Калории по приёмам пищи
     private var breakfastCal = 0.0
     private var lunchCal = 0.0
     private var dinnerCal = 0.0
@@ -46,7 +48,6 @@ class DashboardActivity : AppCompatActivity() {
         val barFat = findViewById<ProgressBar>(R.id.barFat)
         val barCarb = findViewById<ProgressBar>(R.id.barCarbs)
 
-        // TextView для приёмов пищи
         val tvBreakfastCal = findViewById<TextView>(R.id.tvBreakfastCal)
         val tvLunchCal = findViewById<TextView>(R.id.tvLunchCal)
         val tvDinnerCal = findViewById<TextView>(R.id.tvDinnerCal)
@@ -70,8 +71,12 @@ class DashboardActivity : AppCompatActivity() {
                 val fat = data?.getDoubleExtra("TOTAL_FAT", 0.0) ?: 0.0
                 val carb = data?.getDoubleExtra("TOTAL_CARB", 0.0) ?: 0.0
                 val mealType = data?.getStringExtra("MEAL_TYPE") ?: "breakfast"
+                val productName = data?.getStringExtra("PRODUCT_NAME") ?: "Продукт"
+                val weight = data?.getDoubleExtra("WEIGHT", 0.0) ?: 0.0
 
-                // Обновляем в зависимости от приёма пищи
+                val entry = DiaryEntry(productName, weight, calories, prot, fat, carb)
+                diaryEntries.add(entry)
+
                 when (mealType) {
                     "breakfast" -> {
                         breakfastCal += calories
@@ -96,28 +101,25 @@ class DashboardActivity : AppCompatActivity() {
             }
         }
 
-        btnBreakfast.setOnClickListener {
-            val intent = Intent(this, SearchActivity::class.java)
-            intent.putExtra("MEAL_TYPE", "breakfast")
-            searchLauncher.launch(intent)
+        btnBreakfast.setOnClickListener { startSearch("breakfast") }
+        btnLunch.setOnClickListener { startSearch("lunch") }
+        btnDinner.setOnClickListener { startSearch("dinner") }
+
+        btnDiary.setOnClickListener {
+            val intent = Intent(this, DiaryActivity::class.java)
+            intent.putExtra("DIARY_ENTRIES", ArrayList(diaryEntries))
+            startActivity(intent)
         }
 
-        btnLunch.setOnClickListener {
-            val intent = Intent(this, SearchActivity::class.java)
-            intent.putExtra("MEAL_TYPE", "lunch")
-            searchLauncher.launch(intent)
-        }
-
-        btnDinner.setOnClickListener {
-            val intent = Intent(this, SearchActivity::class.java)
-            intent.putExtra("MEAL_TYPE", "dinner")
-            searchLauncher.launch(intent)
-        }
-
-        btnDiary.setOnClickListener { Toast.makeText(this, "Дневник (в разработке)", Toast.LENGTH_SHORT).show() }
         btnProfile.setOnClickListener { Toast.makeText(this, "Профиль (в разработке)", Toast.LENGTH_SHORT).show() }
 
         updateUI(txtCal, circleProg, barProt, barFat, barCarb)
+    }
+
+    private fun startSearch(type: String) {
+        val intent = Intent(this, SearchActivity::class.java)
+        intent.putExtra("MEAL_TYPE", type)
+        searchLauncher.launch(intent)
     }
 
     private fun updateUI(txtCal: TextView, circle: ProgressBar, p: ProgressBar, f: ProgressBar, c: ProgressBar) {
