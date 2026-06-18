@@ -5,4 +5,6 @@
     <dimen name="card_elevation">2dp</dimen>
     <dimen name="section_spacing">24dp</dimen>
     <dimen name="item_spacing">12dp</dimen>
+    <dimen name="activity_card_stroke_default">1dp</dimen>
+    <dimen name="activity_card_stroke_selected">2dp</dimen>
 </resources>

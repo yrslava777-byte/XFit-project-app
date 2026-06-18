@@ -1,11 +1,29 @@
 <resources>
     <string name="app_name">XFit</string>
-    <string name="activity_level">Активность: %d</string>
+    <string name="label_activity">Уровень активности</string>
+    <string name="activity_hint">Выберите вариант, который ближе всего к вашему образу жизни</string>
 
-    <string name="onboarding_subtitle">Рассчитаем вашу суточную норму КБЖУ</string>
+    <string name="onboarding_subtitle">Рассчитаем вашу суточную норму КБЖУ с учётом цели</string>
     <string name="hint_height">Рост (см)</string>
-    <string name="hint_weight">Вес (кг)</string>
+    <string name="hint_weight">Текущий вес (кг)</string>
+    <string name="hint_target_weight">Целевой вес (кг)</string>
     <string name="hint_age">Возраст</string>
+
+    <string-array name="activity_titles">
+        <item>Минимальная</item>
+        <item>Низкая</item>
+        <item>Умеренная</item>
+        <item>Высокая</item>
+        <item>Очень высокая</item>
+    </string-array>
+
+    <string-array name="activity_descriptions">
+        <item>Сидячая работа, почти нет движения и спорта</item>
+        <item>Лёгкая активность: прогулки 1–3 раза в неделю</item>
+        <item>Тренировки 3–5 раз в неделю или активные прогулки</item>
+        <item>Интенсивные тренировки 6–7 раз в неделю</item>
+        <item>Физический труд или спорт каждый день</item>
+    </string-array>
     <string name="label_gender">Пол</string>
     <string name="gender_male">Мужской</string>
     <string name="gender_female">Женский</string>

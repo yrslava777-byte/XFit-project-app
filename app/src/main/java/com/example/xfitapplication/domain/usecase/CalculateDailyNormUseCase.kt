@@ -1,16 +1,19 @@
 package com.example.xfitapplication.domain.usecase
 
 import com.example.xfitapplication.domain.model.User
+import kotlin.math.abs
+import kotlin.math.roundToInt
 
 class CalculateDailyNormUseCase {
+
     fun execute(
         heightCm: Double,
         weightKg: Double,
+        targetWeightKg: Double,
         ageYears: Int,
         gender: String,
         activityLevel: Int
     ): User {
-        // Формула Миффлина-Сан Жеора
         val bmr = if (gender == "male") {
             (10 * weightKg) + (6.25 * heightCm) - (5 * ageYears) + 5
         } else {
@@ -26,12 +29,24 @@ class CalculateDailyNormUseCase {
             else -> 1.2
         }
 
-        val dailyCalories = bmr * activityMultiplier
+        val tdee = bmr * activityMultiplier
+        val weightDiff = weightKg - targetWeightKg
 
-        // БЖУ: 30% белки, 25% жиры, 45% углеводы
-        val dailyProtein = (dailyCalories * 0.30) / 4
-        val dailyFat = (dailyCalories * 0.25) / 9
-        val dailyCarbs = (dailyCalories * 0.45) / 4
+        val dailyCalories = when {
+            weightDiff > 0.5 -> {
+                val deficit = (weightDiff * 25).coerceAtMost(750.0)
+                (tdee - deficit).coerceAtLeast(minCalories(gender))
+            }
+            weightDiff < -0.5 -> {
+                val surplus = (abs(weightDiff) * 20).coerceAtMost(500.0)
+                tdee + surplus
+            }
+            else -> tdee
+        }.roundToInt().toDouble()
+
+        val dailyProtein = ((dailyCalories * 0.30) / 4).roundToInt().toDouble()
+        val dailyFat = ((dailyCalories * 0.25) / 9).roundToInt().toDouble()
+        val dailyCarbs = ((dailyCalories * 0.45) / 4).roundToInt().toDouble()
 
         return User(
             heightCm = heightCm,
@@ -39,11 +54,19 @@ class CalculateDailyNormUseCase {
             ageYears = ageYears,
             gender = gender,
             activityLevel = activityLevel,
-            targetWeightKg = null,
+            targetWeightKg = targetWeightKg,
             dailyCalories = dailyCalories,
             dailyProtein = dailyProtein,
             dailyFat = dailyFat,
             dailyCarbs = dailyCarbs
         )
+    }
+
+    private fun minCalories(gender: String): Double =
+        if (gender == "male") MIN_CALORIES_MALE else MIN_CALORIES_FEMALE
+
+    companion object {
+        private const val MIN_CALORIES_MALE = 1500.0
+        private const val MIN_CALORIES_FEMALE = 1200.0
     }
 }
