@@ -7,80 +7,124 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.xfitapplication.R
 
 class DashboardActivity : AppCompatActivity() {
 
-    private lateinit var btnBreakfast: Button
-    private lateinit var btnLunch: Button
-    private lateinit var btnDinner: Button
-    private lateinit var btnDiary: Button
-    private lateinit var btnProfile: Button
+    private lateinit var searchLauncher: ActivityResultLauncher<Intent>
+
+    private var consumedCal = 0.0
+    private var consumedProt = 0.0
+    private var consumedFat = 0.0
+    private var consumedCarb = 0.0
+
+    private var normCal = 2000.0
+    private var normProt = 120.0
+    private var normFat = 60.0
+    private var normCarb = 250.0
+
+    // Калории по приёмам пищи
+    private var breakfastCal = 0.0
+    private var lunchCal = 0.0
+    private var dinnerCal = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
 
-        val calories = intent.getDoubleExtra("CALORIES", 2000.0)
-        val protein = intent.getDoubleExtra("PROTEIN", 120.0)
-        val fat = intent.getDoubleExtra("FAT", 60.0)
-        val carbs = intent.getDoubleExtra("CARBS", 250.0)
+        normCal = intent.getDoubleExtra("CALORIES", 2000.0)
+        normProt = intent.getDoubleExtra("PROTEIN", 120.0)
+        normFat = intent.getDoubleExtra("FAT", 60.0)
+        normCarb = intent.getDoubleExtra("CARBS", 250.0)
 
-        // Инициализация View
-        val txtCalories = findViewById<TextView>(R.id.txtCalories)
-        val circleProgress = findViewById<ProgressBar>(R.id.progressCircle)
-
-        // Прогресс-бары БЖУ
-        val barProtein = findViewById<ProgressBar>(R.id.barProtein)
+        val txtCal = findViewById<TextView>(R.id.txtCalories)
+        val circleProg = findViewById<ProgressBar>(R.id.progressCircle)
+        val barProt = findViewById<ProgressBar>(R.id.barProtein)
         val barFat = findViewById<ProgressBar>(R.id.barFat)
-        val barCarbs = findViewById<ProgressBar>(R.id.barCarbs)
+        val barCarb = findViewById<ProgressBar>(R.id.barCarbs)
 
-        // Кнопки "+"
-        btnBreakfast = findViewById(R.id.btnBreakfast)
-        btnLunch = findViewById(R.id.btnLunch)
-        btnDinner = findViewById(R.id.btnDinner)
+        // TextView для приёмов пищи
+        val tvBreakfastCal = findViewById<TextView>(R.id.tvBreakfastCal)
+        val tvLunchCal = findViewById<TextView>(R.id.tvLunchCal)
+        val tvDinnerCal = findViewById<TextView>(R.id.tvDinnerCal)
 
-        // Кнопки нижнего меню
-        btnDiary = findViewById(R.id.btnDiary)
-        btnProfile = findViewById(R.id.btnProfile)
+        val btnBreakfast = findViewById<Button>(R.id.btnBreakfast)
+        val btnLunch = findViewById<Button>(R.id.btnLunch)
+        val btnDinner = findViewById<Button>(R.id.btnDinner)
+        val btnDiary = findViewById<Button>(R.id.btnDiary)
+        val btnProfile = findViewById<Button>(R.id.btnProfile)
 
+        circleProg.max = normCal.toInt()
+        barProt.max = normProt.toInt()
+        barFat.max = normFat.toInt()
+        barCarb.max = normCarb.toInt()
 
-        // Калории
-        txtCalories.text = "0 / ${calories.toInt()} ккал"
-        circleProgress.max = calories.toInt()
-        circleProgress.progress = 0
+        searchLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val data = result.data
+                val calories = data?.getDoubleExtra("TOTAL_KCAL", 0.0) ?: 0.0
+                val prot = data?.getDoubleExtra("TOTAL_PROT", 0.0) ?: 0.0
+                val fat = data?.getDoubleExtra("TOTAL_FAT", 0.0) ?: 0.0
+                val carb = data?.getDoubleExtra("TOTAL_CARB", 0.0) ?: 0.0
+                val mealType = data?.getStringExtra("MEAL_TYPE") ?: "breakfast"
 
-        // БЖУ
-        barProtein.max = protein.toInt()
-        barProtein.progress = 0
+                // Обновляем в зависимости от приёма пищи
+                when (mealType) {
+                    "breakfast" -> {
+                        breakfastCal += calories
+                        tvBreakfastCal.text = "${breakfastCal.toInt()} / 500 ккал"
+                    }
+                    "lunch" -> {
+                        lunchCal += calories
+                        tvLunchCal.text = "${lunchCal.toInt()} / 700 ккал"
+                    }
+                    "dinner" -> {
+                        dinnerCal += calories
+                        tvDinnerCal.text = "${dinnerCal.toInt()} / 550 ккал"
+                    }
+                }
 
-        barFat.max = fat.toInt()
-        barFat.progress = 0
+                consumedCal += calories
+                consumedProt += prot
+                consumedFat += fat
+                consumedCarb += carb
 
-        barCarbs.max = carbs.toInt()
-        barCarbs.progress = 0
-
-        // Обработчик для кнопок "+"
-        val onClickAdd = View.OnClickListener {
-            val intent = Intent(this@DashboardActivity, SearchActivity::class.java)
-            startActivity(intent)
+                updateUI(txtCal, circleProg, barProt, barFat, barCarb)
+            }
         }
 
-        // Назначаем обработчики
-        btnBreakfast.setOnClickListener(onClickAdd)
-        btnLunch.setOnClickListener(onClickAdd)
-        btnDinner.setOnClickListener(onClickAdd)
-
-        // Обработчики кнопок нижнего меню
-        btnDiary.setOnClickListener {
-            // TODO: Переход на экран дневника
-            Toast.makeText(this, "Открыть дневник", Toast.LENGTH_SHORT).show()
+        btnBreakfast.setOnClickListener {
+            val intent = Intent(this, SearchActivity::class.java)
+            intent.putExtra("MEAL_TYPE", "breakfast")
+            searchLauncher.launch(intent)
         }
 
-        btnProfile.setOnClickListener {
-            // TODO: Переход на экран профиля
-            Toast.makeText(this, "Открыть профиль", Toast.LENGTH_SHORT).show()
+        btnLunch.setOnClickListener {
+            val intent = Intent(this, SearchActivity::class.java)
+            intent.putExtra("MEAL_TYPE", "lunch")
+            searchLauncher.launch(intent)
         }
+
+        btnDinner.setOnClickListener {
+            val intent = Intent(this, SearchActivity::class.java)
+            intent.putExtra("MEAL_TYPE", "dinner")
+            searchLauncher.launch(intent)
+        }
+
+        btnDiary.setOnClickListener { Toast.makeText(this, "Дневник (в разработке)", Toast.LENGTH_SHORT).show() }
+        btnProfile.setOnClickListener { Toast.makeText(this, "Профиль (в разработке)", Toast.LENGTH_SHORT).show() }
+
+        updateUI(txtCal, circleProg, barProt, barFat, barCarb)
+    }
+
+    private fun updateUI(txtCal: TextView, circle: ProgressBar, p: ProgressBar, f: ProgressBar, c: ProgressBar) {
+        txtCal.text = "${consumedCal.toInt()} / ${normCal.toInt()} ккал"
+        circle.progress = consumedCal.toInt()
+        p.progress = consumedProt.toInt()
+        f.progress = consumedFat.toInt()
+        c.progress = consumedCarb.toInt()
     }
 }
