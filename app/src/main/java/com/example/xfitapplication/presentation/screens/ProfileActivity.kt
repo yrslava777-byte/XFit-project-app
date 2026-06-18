@@ -40,7 +40,7 @@ class ProfileActivity : AppCompatActivity() {
             if (user == null) return@observe
             tvHeight.text = "${user.heightCm.toInt()} см"
             tvWeight.text = "${user.weightKg.toInt()} кг"
-            tvAge.text = "${user.ageYears} года"
+            tvAge.text = "${user.ageYears} лет"
             tvTargetWeight.text = "${user.targetWeightKg?.toInt() ?: user.weightKg.toInt()} кг"
             tvCalories.text = "${user.dailyCalories.toInt()} ккал"
             tvProtein.text = "${user.dailyProtein.toInt()} г"

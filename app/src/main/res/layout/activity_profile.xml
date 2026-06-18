@@ -18,17 +18,36 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="@string/back" />
+            android:text="@string/back"
+            app:icon="@drawable/ic_back"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:iconTint="@color/primary" />
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             android:gravity="center"
-            android:text="@string/profile_title"
-            android:textColor="@color/text_primary"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/bg_icon_circle"
+                android:contentDescription="@string/profile_title"
+                android:padding="16dp"
+                android:src="@drawable/icon_user" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/profile_title"
+                android:textColor="@color/text_primary"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.XFit.Card"
@@ -45,6 +64,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
+                    android:drawableStart="@drawable/ic_profile"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
                     android:text="Мои параметры"
                     android:textColor="@color/text_primary"
                     android:textStyle="bold" />
@@ -109,7 +131,7 @@
                         android:id="@+id/tvAge"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="32 года"
+                        android:text="32 лет"
                         android:textColor="@color/text_primary"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -131,6 +153,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
+                    android:drawableStart="@drawable/ic_weight"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
                     android:text="Цель"
                     android:textColor="@color/text_primary"
                     android:textStyle="bold" />
@@ -173,6 +198,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
+                    android:drawableStart="@drawable/ic_calories"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
                     android:text="Суточная норма"
                     android:textColor="@color/text_primary"
                     android:textStyle="bold" />
@@ -271,7 +299,11 @@
             style="@style/Widget.XFit.Button.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Изменить параметры" />
+            android:text="Настройки"
+            app:icon="@drawable/ic_settings"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:iconTint="@color/on_primary" />
 
     </LinearLayout>
 </ScrollView>

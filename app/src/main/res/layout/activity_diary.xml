@@ -13,25 +13,49 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="@string/back" />
+        android:text="@string/back"
+        app:icon="@drawable/ic_back"
+        app:iconGravity="textStart"
+        app:iconPadding="8dp"
+        app:iconTint="@color/primary" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:text="@string/diary_title"
-        android:textColor="@color/text_primary"
-        android:textSize="24sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/tvDate"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:text="Сегодня"
-        android:textColor="@color/text_secondary"
-        android:textSize="16sp" />
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="12dp"
+            android:contentDescription="@string/diary_title"
+            android:src="@drawable/icon_calendar" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/diary_title"
+                android:textColor="@color/text_primary"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Сегодня"
+                android:textColor="@color/text_secondary"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </LinearLayout>
 
     <com.google.android.material.card.MaterialCardView
         style="@style/Widget.XFit.Card"
@@ -48,6 +72,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
+                android:drawableStart="@drawable/ic_calories"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical"
                 android:text="Итого за день"
                 android:textColor="@color/text_primary"
                 android:textStyle="bold" />
@@ -147,9 +174,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
+        android:drawableStart="@drawable/ic_food"
+        android:drawablePadding="8dp"
+        android:gravity="center_vertical"
         android:text="Добавленные продукты"
         android:textColor="@color/text_primary"
         android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:text="@string/diary_delete_hint"
+        android:textColor="@color/text_hint"
+        android:textSize="13sp" />
 
     <ListView
         android:id="@+id/lvDiaryItems"
@@ -167,6 +205,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Очистить дневник"
+        app:icon="@drawable/ic_delete"
+        app:iconGravity="textStart"
+        app:iconPadding="8dp"
+        app:iconTint="@color/error"
         app:strokeColor="@color/error"
         android:textColor="@color/error" />
 

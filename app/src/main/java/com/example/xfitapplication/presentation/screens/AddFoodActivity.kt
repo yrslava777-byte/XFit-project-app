@@ -6,7 +6,10 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.xfitapplication.R
+import com.example.xfitapplication.domain.usecase.ValidatePortionWeightUseCase
 import com.example.xfitapplication.presentation.ViewModelFactory
+import com.example.xfitapplication.presentation.util.readPortionWeightField
+import com.example.xfitapplication.presentation.util.setupDecimalField
 import com.example.xfitapplication.presentation.viewmodel.AddFoodViewModel
 import com.google.android.material.textfield.TextInputEditText
 import java.util.Locale
@@ -16,6 +19,8 @@ class AddFoodActivity : AppCompatActivity() {
     private val viewModel: AddFoodViewModel by viewModels {
         ViewModelFactory { AddFoodViewModel(application) }
     }
+
+    private val validatePortionWeight = ValidatePortionWeightUseCase()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +42,7 @@ class AddFoodActivity : AppCompatActivity() {
         val tvFat100 = findViewById<TextView>(R.id.tvFat100)
         val tvCarb100 = findViewById<TextView>(R.id.tvCarb100)
         val etWeight = findViewById<TextInputEditText>(R.id.etWeight)
+        etWeight.setupDecimalField()
 
         tvProductName.text = productName
         tvKcal100.text = "${kcalPer100.toInt()} ккал"
@@ -44,17 +50,23 @@ class AddFoodActivity : AppCompatActivity() {
         tvFat100.text = String.format(Locale.getDefault(), "%.1f г", fatPer100)
         tvCarb100.text = String.format(Locale.getDefault(), "%.1f г", carbPer100)
 
+        viewModel.error.observe(this) { event ->
+            event?.getContentIfNotHandled()?.let { message ->
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+            }
+        }
+
         findViewById<com.google.android.material.button.MaterialButton>(R.id.btnCancel)
             .setOnClickListener { finish() }
 
         findViewById<com.google.android.material.button.MaterialButton>(R.id.btnAdd)
             .setOnClickListener {
-                val weight = etWeight.text.toString().toDoubleOrNull()
-                if (weight == null || weight <= 0) {
-                    Toast.makeText(this, "Укажите вес порции", Toast.LENGTH_SHORT).show()
-                    return@setOnClickListener
-                }
+                val weight = readPortionWeightField(this, etWeight) { value ->
+                    validatePortionWeight.execute(value).message
+                } ?: return@setOnClickListener
+
                 viewModel.addFood(weight, mealType) {
+                    if (isFinishing) return@addFood
                     setResult(RESULT_OK)
                     finish()
                 }

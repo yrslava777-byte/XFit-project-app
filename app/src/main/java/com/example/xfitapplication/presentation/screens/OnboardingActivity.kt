@@ -8,10 +8,18 @@ import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.content.ContextCompat
 import com.example.xfitapplication.R
 import com.example.xfitapplication.presentation.ViewModelFactory
-import com.example.xfitapplication.presentation.util.parseStrictInt
+import com.example.xfitapplication.domain.usecase.ValidateAgeUseCase
+import com.example.xfitapplication.domain.usecase.ValidateBodyWeightUseCase
+import com.example.xfitapplication.domain.usecase.ValidateTargetWeightUseCase
+import com.example.xfitapplication.presentation.util.clearErrorOnInput
+import com.example.xfitapplication.presentation.util.IntFieldSpec
+import com.example.xfitapplication.presentation.util.setFieldError
+import com.example.xfitapplication.presentation.util.showFormError
+import com.example.xfitapplication.presentation.util.validateIntFields
 import com.example.xfitapplication.presentation.viewmodel.OnboardingViewModel
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.radiobutton.MaterialRadioButton
@@ -33,7 +41,12 @@ class OnboardingActivity : AppCompatActivity() {
     private val activityCards = mutableListOf<MaterialCardView>()
     private var selectedActivityLevel = 3
 
+    private val validateBodyWeight = ValidateBodyWeightUseCase()
+    private val validateAge = ValidateAgeUseCase()
+    private val validateTargetWeight = ValidateTargetWeightUseCase()
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_onboarding)
 
@@ -43,6 +56,10 @@ class OnboardingActivity : AppCompatActivity() {
         etAge = findViewById(R.id.etAge)
         rgGender = findViewById(R.id.rgGender)
         containerActivity = findViewById(R.id.containerActivity)
+
+        listOf(etHeight, etWeight, etTargetWeight, etAge).forEach {
+            it.clearErrorOnInput()
+        }
 
         setupActivityLevels()
 
@@ -98,10 +115,34 @@ class OnboardingActivity : AppCompatActivity() {
     }
 
     private fun calculate() {
-        val height = readInt(etHeight, "Рост") ?: return
-        val weight = readInt(etWeight, "Текущий вес") ?: return
-        val targetWeight = readInt(etTargetWeight, "Целевой вес") ?: return
-        val age = readInt(etAge, "Возраст") ?: return
+        val validation = validateIntFields(
+            this,
+            listOf(
+                IntFieldSpec(etHeight, "Рост"),
+                IntFieldSpec(etWeight, "Текущий вес") { value ->
+                    validateBodyWeight.execute(value).message
+                },
+                IntFieldSpec(etTargetWeight, "Целевой вес") { value ->
+                    validateBodyWeight.execute(value).message
+                },
+                IntFieldSpec(etAge, "Возраст") { value ->
+                    validateAge.execute(value).message
+                }
+            )
+        )
+        if (validation.hasErrors) return
+
+        val height = validation.values[0]!!
+        val weight = validation.values[1]!!
+        val targetWeight = validation.values[2]!!
+        val age = validation.values[3]!!
+
+        val targetValidation = validateTargetWeight.execute(height.toDouble(), targetWeight.toDouble())
+        if (!targetValidation.isValid) {
+            etTargetWeight.setFieldError(targetValidation.message)
+            showFormError(this, targetValidation.message ?: "Некорректный целевой вес")
+            return
+        }
 
         val gender = if (rgGender.checkedRadioButtonId == R.id.rbMale) "male" else "female"
 
@@ -110,15 +151,6 @@ class OnboardingActivity : AppCompatActivity() {
         ) {
             openDashboard()
         }
-    }
-
-    private fun readInt(field: TextInputEditText, label: String): Int? {
-        val value = field.text?.toString()?.parseStrictInt()
-        if (value == null) {
-            field.error = "Только целое число"
-            Toast.makeText(this, "Поле «$label»: введите целое число", Toast.LENGTH_SHORT).show()
-        }
-        return value
     }
 
     private fun openDashboard() {

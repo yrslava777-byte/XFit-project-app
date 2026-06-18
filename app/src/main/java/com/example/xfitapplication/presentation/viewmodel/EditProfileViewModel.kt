@@ -8,6 +8,10 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.xfitapplication.domain.model.User
 import com.example.xfitapplication.domain.repository.FoodRepository
+import com.example.xfitapplication.domain.usecase.ValidateAgeUseCase
+import com.example.xfitapplication.domain.usecase.ValidateBodyWeightUseCase
+import com.example.xfitapplication.domain.usecase.ValidateCaloriesUseCase
+import com.example.xfitapplication.domain.usecase.ValidateMacroUseCase
 import com.example.xfitapplication.domain.usecase.ValidateTargetWeightUseCase
 import com.example.xfitapplication.presentation.RepositoryProvider
 import com.example.xfitapplication.presentation.util.Event
@@ -16,7 +20,11 @@ import kotlinx.coroutines.launch
 class EditProfileViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: FoodRepository = RepositoryProvider.getRepository(application)
-    private val validateWeight = ValidateTargetWeightUseCase()
+    private val validateBodyWeight = ValidateBodyWeightUseCase()
+    private val validateAge = ValidateAgeUseCase()
+    private val validateCalories = ValidateCaloriesUseCase()
+    private val validateMacro = ValidateMacroUseCase()
+    private val validateTargetWeight = ValidateTargetWeightUseCase()
 
     val user: LiveData<User?> = repository.getUser().asLiveData()
 
@@ -46,37 +54,49 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
         }
 
         viewModelScope.launch {
-            val existing = repository.getUserOnce()
-            val user = User(
-                id = existing?.id ?: 1,
-                heightCm = form.height.toDouble(),
-                weightKg = form.weight.toDouble(),
-                ageYears = form.age,
-                gender = existing?.gender ?: "female",
-                activityLevel = existing?.activityLevel ?: 2,
-                targetWeightKg = form.targetWeight.toDouble(),
-                dailyCalories = form.calories.toDouble(),
-                dailyProtein = form.protein.toDouble(),
-                dailyFat = form.fat.toDouble(),
-                dailyCarbs = form.carbs.toDouble()
-            )
-            repository.saveUser(user)
-            _saveResult.postValue(Event(SaveResult.Success))
+            try {
+                val existing = repository.getUserOnce()
+                val user = User(
+                    id = existing?.id ?: 1,
+                    heightCm = form.height.toDouble(),
+                    weightKg = form.weight.toDouble(),
+                    ageYears = form.age,
+                    gender = existing?.gender ?: "female",
+                    activityLevel = existing?.activityLevel ?: 2,
+                    targetWeightKg = form.targetWeight.toDouble(),
+                    dailyCalories = form.calories.toDouble(),
+                    dailyProtein = form.protein.toDouble(),
+                    dailyFat = form.fat.toDouble(),
+                    dailyCarbs = form.carbs.toDouble()
+                )
+                repository.saveUser(user)
+                _saveResult.postValue(Event(SaveResult.Success))
+            } catch (_: Exception) {
+                _saveResult.postValue(Event(SaveResult.Error("Не удалось сохранить изменения")))
+            }
         }
     }
 
-    private fun validateForm(form: ProfileForm): String? = when {
-        form.height <= 0 || form.height > 250 -> "Укажите корректный рост (см), целое число"
-        form.weight <= 0 || form.weight > 300 -> "Укажите корректный вес (кг), целое число"
-        form.age <= 0 || form.age > 120 -> "Укажите корректный возраст, целое число"
-        form.targetWeight <= 0 -> "Укажите корректный целевой вес (кг), целое число"
-        form.calories <= 0 -> "Калории должны быть целым числом больше 0"
-        form.protein < 0 -> "Белки должны быть целым числом"
-        form.fat < 0 -> "Жиры должны быть целым числом"
-        form.carbs < 0 -> "Углеводы должны быть целым числом"
-        else -> {
-            val validation = validateWeight.execute(form.height.toDouble(), form.targetWeight.toDouble())
-            if (!validation.isValid) validation.message else null
+    private fun validateForm(form: ProfileForm): String? {
+        val errors = buildList {
+            if (form.height <= 0 || form.height > 250) {
+                add("Укажите корректный рост (см), целое число")
+            }
+            validateBodyWeight.execute(form.weight).message?.let { add(it) }
+            validateAge.execute(form.age).message?.let { add(it) }
+            validateBodyWeight.execute(form.targetWeight).message?.let { add(it) }
+            validateCalories.execute(form.calories).message?.let { add(it) }
+            validateMacro.execute(ValidateMacroUseCase.Macro.PROTEIN, form.protein).message?.let { add(it) }
+            validateMacro.execute(ValidateMacroUseCase.Macro.FAT, form.fat).message?.let { add(it) }
+            validateMacro.execute(ValidateMacroUseCase.Macro.CARBS, form.carbs).message?.let { add(it) }
+            val targetValidation = validateTargetWeight.execute(
+                form.height.toDouble(),
+                form.targetWeight.toDouble()
+            )
+            if (!targetValidation.isValid) {
+                add(targetValidation.message ?: "Некорректный целевой вес")
+            }
         }
+        return errors.takeIf { it.isNotEmpty() }?.joinToString("\n")
     }
 }

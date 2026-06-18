@@ -11,8 +11,15 @@
         android:layout_height="wrap_content"
         android:background="@color/primary_dark"
         android:gravity="center"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:padding="@dimen/screen_padding">
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="10dp"
+            android:contentDescription="@string/search_title"
+            android:src="@drawable/icon_search" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -29,13 +36,25 @@
         android:orientation="vertical"
         android:padding="@dimen/screen_padding">
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBack"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/back"
+            app:icon="@drawable/ic_back"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:iconTint="@color/primary" />
+
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:hint="@string/search_hint"
-            app:startIconDrawable="@drawable/ic_search">
+            app:startIconDrawable="@drawable/icon_search">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etSearchQuery"
@@ -53,5 +72,19 @@
             android:divider="@color/outline"
             android:dividerHeight="1dp"
             android:paddingBottom="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAddCustom"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/add_custom_product"
+            app:icon="@drawable/icon_plus"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:iconTint="@null"
+            app:strokeColor="@color/primary"
+            android:textColor="@color/primary" />
     </LinearLayout>
 </LinearLayout>

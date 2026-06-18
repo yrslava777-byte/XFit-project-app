@@ -1,19 +1,28 @@
 package com.example.xfitapplication.domain.usecase
 
+import com.example.xfitapplication.domain.validation.FieldValidationResult
+import com.example.xfitapplication.domain.validation.InputLimits
+import com.example.xfitapplication.domain.validation.ValidationMessages
+
 class ValidateTargetWeightUseCase {
 
-    data class Result(val isValid: Boolean, val message: String? = null)
-
-    fun execute(heightCm: Double, targetWeightKg: Double): Result {
+    fun execute(heightCm: Double, targetWeightKg: Double): FieldValidationResult {
+        if (targetWeightKg > InputLimits.MAX_BODY_WEIGHT_KG) {
+            return FieldValidationResult.invalid(
+                ValidationMessages.maxExceeded(InputLimits.MAX_BODY_WEIGHT_KG)
+            )
+        }
         if (targetWeightKg < MIN_WEIGHT_KG) {
-            return Result(false, "Целевой вес не может быть меньше $MIN_WEIGHT_KG кг")
+            return FieldValidationResult.invalid("Целевой вес не может быть меньше $MIN_WEIGHT_KG кг")
         }
         val heightM = heightCm / 100.0
         val bmi = targetWeightKg / (heightM * heightM)
         if (bmi < MIN_BMI) {
-            return Result(false, "Целевой вес слишком низкий для вашего роста (ИМТ < $MIN_BMI)")
+            return FieldValidationResult.invalid(
+                "Целевой вес слишком низкий для вашего роста (ИМТ < $MIN_BMI)"
+            )
         }
-        return Result(true)
+        return FieldValidationResult.valid()
     }
 
     companion object {

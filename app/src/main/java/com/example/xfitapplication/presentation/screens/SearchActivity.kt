@@ -28,6 +28,19 @@ class SearchActivity : AppCompatActivity() {
 
         val etSearch = findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etSearchQuery)
         lvResults = findViewById(R.id.lvSearchResults)
+        val mealType = intent.getStringExtra("MEAL_TYPE") ?: "breakfast"
+
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnBack)
+            .setOnClickListener { finish() }
+
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnAddCustom)
+            .setOnClickListener {
+                startActivity(
+                    Intent(this, AddCustomProductActivity::class.java).apply {
+                        putExtra("MEAL_TYPE", mealType)
+                    }
+                )
+            }
 
         adapter = ArrayAdapter(this, R.layout.item_product_list, R.id.tvProductItem, mutableListOf())
         lvResults.adapter = adapter
@@ -45,18 +58,18 @@ class SearchActivity : AppCompatActivity() {
 
         lvResults.setOnItemClickListener { _, _, position, _ ->
             val product = products.getOrNull(position) ?: return@setOnItemClickListener
-            val mealType = intent.getStringExtra("MEAL_TYPE") ?: "breakfast"
 
-            val addIntent = Intent(this, AddFoodActivity::class.java).apply {
-                putExtra("PRODUCT_ID", product.id)
-                putExtra("PRODUCT_NAME", product.name)
-                putExtra("KCAL_PER_100", product.caloriesPer100g)
-                putExtra("PROT_PER_100", product.proteinPer100g)
-                putExtra("FAT_PER_100", product.fatPer100g)
-                putExtra("CARB_PER_100", product.carbsPer100g)
-                putExtra("MEAL_TYPE", mealType)
-            }
-            startActivity(addIntent)
+            startActivity(
+                Intent(this, AddFoodActivity::class.java).apply {
+                    putExtra("PRODUCT_ID", product.id)
+                    putExtra("PRODUCT_NAME", product.name)
+                    putExtra("KCAL_PER_100", product.caloriesPer100g)
+                    putExtra("PROT_PER_100", product.proteinPer100g)
+                    putExtra("FAT_PER_100", product.fatPer100g)
+                    putExtra("CARB_PER_100", product.carbsPer100g)
+                    putExtra("MEAL_TYPE", mealType)
+                }
+            )
             finish()
         }
     }

@@ -14,6 +14,12 @@ interface ProductDao {
     @Query("SELECT COUNT(*) FROM products")
     suspend fun getCount(): Int
 
+    @Query("SELECT name FROM products")
+    suspend fun getAllProductNames(): List<String>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertProduct(product: ProductEntity)
+
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun insertCustomProduct(product: ProductEntity): Long
 }
