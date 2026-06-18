@@ -16,7 +16,7 @@ import java.util.ArrayList
 class DashboardActivity : AppCompatActivity() {
 
     private lateinit var searchLauncher: ActivityResultLauncher<Intent>
-
+    private lateinit var profileLauncher: ActivityResultLauncher<Intent>
     private var consumedCal = 0.0
     private var consumedProt = 0.0
     private var consumedFat = 0.0
@@ -101,6 +101,25 @@ class DashboardActivity : AppCompatActivity() {
             }
         }
 
+        profileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val data = result.data
+                normCal = data?.getDoubleExtra("CALORIES", normCal) ?: normCal
+                normProt = data?.getDoubleExtra("PROTEIN", normProt) ?: normProt
+                normFat = data?.getDoubleExtra("FAT", normFat) ?: normFat
+                normCarb = data?.getDoubleExtra("CARBS", normCarb) ?: normCarb
+
+                val txtCal = findViewById<TextView>(R.id.txtCalories)
+                val circleProg = findViewById<ProgressBar>(R.id.progressCircle)
+                val barProt = findViewById<ProgressBar>(R.id.barProtein)
+                val barFat = findViewById<ProgressBar>(R.id.barFat)
+                val barCarb = findViewById<ProgressBar>(R.id.barCarbs)
+                updateUI(txtCal, circleProg, barProt, barFat, barCarb)
+
+                Toast.makeText(this, "Данные обновлены", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         btnBreakfast.setOnClickListener { startSearch("breakfast") }
         btnLunch.setOnClickListener { startSearch("lunch") }
         btnDinner.setOnClickListener { startSearch("dinner") }
@@ -111,7 +130,19 @@ class DashboardActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        btnProfile.setOnClickListener { Toast.makeText(this, "Профиль (в разработке)", Toast.LENGTH_SHORT).show() }
+        btnProfile.setOnClickListener {
+            val intent = Intent(this, ProfileActivity::class.java).apply {
+                putExtra("HEIGHT", 170.0) // TODO: взять из сохраненных
+                putExtra("WEIGHT", 70.0)
+                putExtra("AGE", 25)
+                putExtra("TARGET_WEIGHT", 65.0)
+                putExtra("CALORIES", normCal)
+                putExtra("PROTEIN", normProt)
+                putExtra("FAT", normFat)
+                putExtra("CARBS", normCarb)
+            }
+            profileLauncher.launch(intent)
+        }
 
         updateUI(txtCal, circleProg, barProt, barFat, barCarb)
     }
